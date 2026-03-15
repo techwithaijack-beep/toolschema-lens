@@ -1,0 +1,11 @@
+Most agent teams are debugging the wrong thing.
+
+A lot of tool-call instability is just bloated tool schemas repeated every turn.
+
+I built ToolSchema Lens — a local-first CLI that lints OpenAI/MCP-style tool contracts, estimates prompt waste, flags large enums / nested schemas / overlong descriptions, and generates a compact runtime-friendly version.
+
+No API calls. No backend. Just run it on your JSON and open the HTML report.
+
+Repo: https://github.com/techwithaijack-beep/toolschema-lens
+
+If you’re building agents, this is one of the easiest hidden wins in the stack.

@@ -1,0 +1,48 @@
+1/ Most agent teams are debugging the wrong thing.
+
+Prompt quality gets blamed first.
+Model choice gets debated next.
+
+But a lot of real-world tool-call instability is just bloated tool schemas repeated every turn.
+
+2/ I built ToolSchema Lens to make that visible.
+
+It’s a local-first CLI that analyzes OpenAI/MCP-style tool contracts and shows:
+- verbose tool descriptions
+- large enums
+- deeply nested schemas
+- duplicated field descriptions
+- runtime-irrelevant metadata
+
+3/ Why this matters:
+
+Every extra chunk of schema text gets shipped into the model context again and again.
+
+That means:
+- more token spend
+- slower requests
+- noisier tool selection
+- harder-to-debug agent behavior
+
+4/ ToolSchema Lens gives you a fast before/after view.
+
+Run one command, open the HTML report, and you can immediately show the team:
+- which tools are expensive
+- where the schema is bloated
+- what a cleaner runtime contract looks like
+
+5/ Design constraints were intentional:
+- no paid APIs
+- no backend
+- zero-dependency runtime
+- immediately demoable locally
+- useful in under 2 minutes
+
+6/ I think tool-schema hygiene is becoming a bigger engineering discipline in agent stacks.
+
+As teams add more MCP servers and function-calling tools, contract quality becomes a first-order reliability issue.
+
+7/ Repo:
+https://github.com/techwithaijack-beep/toolschema-lens
+
+If you’re building agents, try it on your current tool set and see how much prompt budget your contracts are quietly burning.
