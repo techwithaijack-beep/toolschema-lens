@@ -1,0 +1,22 @@
+{
+  "name": "toolschema-lens",
+  "version": "0.1.0",
+  "description": "Lint and compact LLM tool schemas with HTML, Markdown, and JSON reports.",
+  "type": "module",
+  "bin": {
+    "toolschema-lens": "./bin/toolschema-lens.js"
+  },
+  "scripts": {
+    "demo": "node ./bin/toolschema-lens.js ./examples/verbose-tools.json --html-out ./examples/report.html --md-out ./examples/report.md --compact-out ./examples/compact-tools.json",
+    "test": "node ./tests/smoke.mjs"
+  },
+  "keywords": [
+    "llm",
+    "agents",
+    "mcp",
+    "json-schema",
+    "tooling",
+    "prompt-engineering"
+  ],
+  "license": "MIT"
+}

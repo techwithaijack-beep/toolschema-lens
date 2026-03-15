@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>ToolSchema Lens Report</title><style>:root{color-scheme:dark;--bg:#08111f;--panel:#101a2d;--ink:#e8eefc;--muted:#93a4c8;--line:#24314f;--good:#49d17d;--warn:#f4be52;--bad:#ff6b6b}*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:radial-gradient(circle at top,#13213d,var(--bg));color:var(--ink)}.wrap{max-width:1200px;margin:0 auto;padding:32px 20px 80px}.hero{display:grid;gap:16px;margin-bottom:24px}.hero h1{margin:0;font-size:2.2rem}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.summary .pill,.card{background:color-mix(in oklab,var(--panel) 92%,white 8%);border:1px solid var(--line);border-radius:18px}.pill{padding:16px}.pill span{color:var(--muted);display:block;font-size:.9rem}.pill strong{font-size:1.5rem}.card{padding:20px;margin-top:18px}.card-header{display:flex;justify-content:space-between;gap:16px;align-items:start}.card-header h2{margin:0 0 6px}.card-header p{margin:0;color:var(--muted);max-width:760px}.score{font-size:2rem;font-weight:700;padding:10px 14px;border-radius:14px;background:rgba(73,209,125,.12);color:var(--good)}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}.metrics div{padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}.metrics span{display:block;color:var(--muted);font-size:.9rem}.metrics strong{font-size:1.05rem}.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:18px}.findings{list-style:none;padding:0;margin:0;display:grid;gap:10px}.finding{border:1px solid var(--line);border-left-width:5px;border-radius:12px;padding:12px;display:grid;gap:5px}.finding.high{border-left-color:var(--bad)}.finding.medium{border-left-color:var(--warn)}.finding.low{border-left-color:var(--good)}.finding span{font-weight:600}.finding em{color:var(--muted);font-style:normal}pre{margin:0;padding:14px;border-radius:14px;border:1px solid var(--line);background:#091121;overflow:auto;white-space:pre-wrap;word-break:break-word}@media (max-width:920px){.grid{grid-template-columns:1fr}.card-header{flex-direction:column}}</style></head><body><div class="wrap"><section class="hero"><div><h1>ToolSchema Lens</h1><p>Find tool contracts that quietly waste prompt budget, confuse models, or needlessly duplicate metadata.</p></div><div class="summary"><div class="pill"><span>Tools</span><strong>2</strong></div><div class="pill"><span>Tokens before</span><strong>1000</strong></div><div class="pill"><span>Tokens after</span><strong>838</strong></div><div class="pill"><span>Saved</span><strong>162</strong></div><div class="pill"><span>Average score</span><strong>60/100</strong></div></div></section><section class="card"><div class="card-header"><div><h2>create_customer_support_ticket</h2><p>Create a customer support ticket in the enterprise support platform. Use this tool whenever the user mentions a support issue, asks for help with a broken system, or needs escalation. Make sure to include enough detailed context for downstream service agents, account teams, analytics teams, and quality assurance teams to understand the complete case without re-reading the conversation transcript.</p></div><div class="score">20<small>/100</small></div></div><div class="metrics"><div><span>Tokens</span><strong>769 → 607</strong></div><div><span>Saved</span><strong>162</strong></div><div><span>Properties</span><strong>10</strong></div><div><span>Depth</span><strong>4</strong></div></div><div class="grid"><div><h3>Findings</h3><ul class="findings"><li class="finding high"><strong>HIGH</strong><span>Tool description is long enough to inflate every agent call.</span><em>Keep the headline short and move edge cases to docs.</em></li><li class="finding high"><strong>HIGH</strong><span>Schema is approximately 607 tokens before the model even sees user input.</span><em>Shorten descriptions, strip metadata, and split oversized tools.</em></li><li class="finding medium"><strong>MEDIUM</strong><span>Nested depth reaches 4, which makes tool use harder to infer reliably.</span><em>Flatten nested objects or split the contract.</em></li><li class="finding medium"><strong>MEDIUM</strong><span>1 field(s) contain large enums that bloat prompt budget.</span><em>Prefer smaller enums, short codes, or server-side lookup tables.</em></li><li class="finding low"><strong>LOW</strong><span>Schema includes titles/examples/defaults that mainly help humans, not runtime inference.</span><em>Keep verbose docs outside the runtime contract.</em></li><li class="finding medium"><strong>MEDIUM</strong><span>3 fields have no description.</span><em>Every field should explain what the model should put there.</em></li></ul></div><div><h3>Optimized contract</h3><pre>{
+  &quot;name&quot;: &quot;create_customer_support_ticket&quot;,
+  &quot;description&quot;: &quot;Create a customer support ticket in the enterprise support platform.&quot;,
+  &quot;input_schema&quot;: {
+    &quot;type&quot;: &quot;object&quot;,
+    &quot;properties&quot;: {
+      &quot;customer_id&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;description&quot;: &quot;The customer identifier used by the support and billing systems.&quot;
+      },
+      &quot;priority&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;description&quot;: &quot;Priority for downstream routing and SLA decisions.&quot;,
+        &quot;enum&quot;: [
+          &quot;p0&quot;,
+          &quot;p1&quot;,
+          &quot;p2&quot;,
+          &quot;p3&quot;,
+          &quot;p4&quot;,
+          &quot;low&quot;,
+          &quot;medium&quot;,
+          &quot;high&quot;,
+          &quot;urgent&quot;,
+          &quot;vip&quot;,
+          &quot;security&quot;,
+          &quot;legal&quot;,
+          &quot;exec&quot;
+        ]
+      },
+      &quot;summary&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;description&quot;: &quot;One sentence summary for the support ticket, written clearly enough that multiple downstream teams can infer what happened, what broke, and…&quot;
+      },
+      &quot;details&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;properties&quot;: {
+          &quot;product_area&quot;: {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;description&quot;: &quot;Product area relevant to the ticket for triage, reporting, quality review, postmortem tagging, and historical analysis.&quot;
+          },
+          &quot;user_visible_impact&quot;: {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;description&quot;: &quot;Describe the impact in practical user-facing terms.&quot;
+          },
+          &quot;reproduction&quot;: {
+            &quot;type&quot;: &quot;array&quot;,
+            &quot;items&quot;: {
+              &quot;type&quot;: &quot;object&quot;,
+              &quot;properties&quot;: {
+                &quot;step&quot;: {
+                  &quot;type&quot;: &quot;string&quot;,
+                  &quot;description&quot;: &quot;Step instruction for reproducing the problem in a deterministic way.&quot;
+                },
+                &quot;expected&quot;: {
+                  &quot;type&quot;: &quot;string&quot;,
+                  &quot;description&quot;: &quot;Expected result if the system had behaved normally.&quot;
+                },
+                &quot;actual&quot;: {
+                  &quot;type&quot;: &quot;string&quot;,
+                  &quot;description&quot;: &quot;Actual result observed by the user or operator.&quot;
+                }
+              },
+              &quot;required&quot;: [
+                &quot;step&quot;,
+                &quot;expected&quot;,
+                &quot;actual&quot;
+              ]
+            }
+          }
+        },
+        &quot;required&quot;: [
+          &quot;product_area&quot;,
+          &quot;user_visible_impact&quot;
+        ]
+      }
+    },
+    &quot;required&quot;: [
+      &quot;priority&quot;,
+      &quot;summary&quot;,
+      &quot;details&quot;
+    ]
+  }
+}</pre></div></div></section><section class="card"><div class="card-header"><div><h2>lookup_internal_order</h2><p>Look up an order record in the internal commerce system.</p></div><div class="score">100<small>/100</small></div></div><div class="metrics"><div><span>Tokens</span><strong>231 → 231</strong></div><div><span>Saved</span><strong>0</strong></div><div><span>Properties</span><strong>4</strong></div><div><span>Depth</span><strong>1</strong></div></div><div class="grid"><div><h3>Findings</h3><ul class="findings"><li class="finding low"><strong>OK</strong><span>No major findings</span><em>Still review field naming and examples manually.</em></li></ul></div><div><h3>Optimized contract</h3><pre>{
+  &quot;name&quot;: &quot;lookup_internal_order&quot;,
+  &quot;description&quot;: &quot;Look up an order record in the internal commerce system.&quot;,
+  &quot;input_schema&quot;: {
+    &quot;type&quot;: &quot;object&quot;,
+    &quot;properties&quot;: {
+      &quot;order_id&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;description&quot;: &quot;Canonical order identifier from the backend order service.&quot;
+      },
+      &quot;include_history&quot;: {
+        &quot;type&quot;: &quot;boolean&quot;,
+        &quot;description&quot;: &quot;Whether to include full status history in the response.&quot;
+      },
+      &quot;response_mode&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;description&quot;: &quot;How much data should be returned.&quot;,
+        &quot;enum&quot;: [
+          &quot;summary&quot;,
+          &quot;summary_plus_metadata&quot;,
+          &quot;full&quot;,
+          &quot;full_plus_events&quot;,
+          &quot;full_plus_events_and_items&quot;,
+          &quot;full_plus_events_and_items_and_notes&quot;,
+          &quot;raw&quot;
+        ]
+      },
+      &quot;locale&quot;: {
+        &quot;type&quot;: &quot;string&quot;
+      }
+    },
+    &quot;required&quot;: [
+      &quot;order_id&quot;
+    ]
+  }
+}</pre></div></div></section></div></body></html>
